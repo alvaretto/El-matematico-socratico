@@ -20,6 +20,8 @@ const chatForm = document.getElementById('chat-form')!;
 const promptInput = document.getElementById('prompt-input') as HTMLTextAreaElement;
 const fileInput = document.getElementById('file-input') as HTMLInputElement;
 const imagePreviewContainer = document.getElementById('image-preview-container')!;
+const themeToggleButton = document.getElementById('theme-toggle')!;
+
 
 let attachedFile: File | null = null;
 
@@ -77,7 +79,9 @@ function appendMessage(role: 'user' | 'model' | 'loading', content?: string | HT
 
     if (content) {
         if (typeof content === 'string') {
-            messageDiv.textContent = content;
+            const contentWrapper = document.createElement('div');
+            contentWrapper.textContent = content;
+            messageDiv.appendChild(contentWrapper);
         } else {
             messageDiv.appendChild(content);
         }
@@ -92,7 +96,10 @@ function showLoadingIndicator() {
     const loadingDiv = document.createElement('div');
     loadingDiv.classList.add('loading-dots');
     loadingDiv.innerHTML = '<div></div><div></div><div></div>';
-    return appendMessage('loading', loadingDiv);
+    const loadingMessage = appendMessage('loading');
+    loadingMessage.classList.add('model-message'); // Style it like a model message
+    loadingMessage.appendChild(loadingDiv);
+    return loadingMessage;
 }
 
 function updateImagePreview() {
@@ -133,8 +140,10 @@ chatForm.addEventListener('submit', async (e) => {
 
     // Display user message
     const userMessageDiv = appendMessage('user');
+    const textWrapper = document.createElement('div');
     if (userText) {
-        userMessageDiv.textContent = userText;
+        textWrapper.textContent = userText;
+        userMessageDiv.appendChild(textWrapper);
     }
     if (attachedFile) {
         const img = document.createElement('img');
@@ -201,8 +210,37 @@ fileInput.addEventListener('change', () => {
 });
 
 
-// --- Initial Message ---
+// --- Theme Toggle ---
+function applyTheme(theme: 'light' | 'dark') {
+    if (theme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+    } else {
+        document.documentElement.classList.remove('dark-theme');
+    }
+}
+
+themeToggleButton.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark-theme');
+    const newTheme = isDark ? 'light' : 'dark';
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+});
+
+// --- Initial Setup ---
 function start() {
+    // Apply saved theme or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme) {
+        applyTheme(savedTheme as 'light' | 'dark');
+    } else if (systemPrefersDark) {
+        applyTheme('dark');
+    } else {
+        applyTheme('light');
+    }
+    
+    // Initial message
     appendMessage('model', '¡Hola! Soy MateTutor 😃. Muéstrame esa pregunta de matemáticas en la que necesitas ayuda. ¡Puedes escribirla o subir una imagen y juntos la resolveremos paso a paso!');
 }
 

@@ -7,10 +7,32 @@
     --user-message-text: #ffffff;
     --model-message-bg: #e9ecef;
     --model-message-text: #212529;
-    --text-primary: #333;
-    --text-secondary: #667;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
     --border-color: #dee2e6;
+    --input-bg: #ffffff;
+    --icon-color: #6c757d;
+    --hover-bg: #d8dfe6;
+    --shadow-color: rgba(0,0,0,0.05);
     --font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+html.dark-theme {
+    --background-color: #121212;
+    --header-bg: #1e1e1e;
+    --chat-bg: #121212;
+    --footer-bg: #1e1e1e;
+    --user-message-bg: #377dff;
+    --user-message-text: #ffffff;
+    --model-message-bg: #333333;
+    --model-message-text: #e0e0e0;
+    --text-primary: #f5f5f5;
+    --text-secondary: #adb5bd;
+    --border-color: #3a3a3a;
+    --input-bg: #2b2b2b;
+    --icon-color: #adb5bd;
+    --hover-bg: #444444;
+    --shadow-color: rgba(0,0,0,0.2);
 }
 
 * {
@@ -24,6 +46,7 @@ html, body {
     font-family: var(--font-family);
     background-color: var(--background-color);
     color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 #app {
@@ -33,14 +56,24 @@ html, body {
     max-width: 800px;
     margin: 0 auto;
     background-color: var(--chat-bg);
-    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    box-shadow: 0 0 20px var(--shadow-color);
+    transition: background-color 0.3s;
 }
 
 header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
-    text-align: center;
     background-color: var(--header-bg);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.header-content {
+    text-align: center;
+    flex-grow: 1;
+    margin-left: 40px; /* Offset for the button */
 }
 
 header h1 {
@@ -52,6 +85,31 @@ header p {
     color: var(--text-secondary);
     font-size: 0.9rem;
 }
+
+#theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--icon-color);
+    width: 40px;
+    height: 40px;
+}
+
+#theme-toggle:hover {
+    background-color: var(--hover-bg);
+}
+
+#theme-toggle .sun { display: none; }
+#theme-toggle .moon { display: block; }
+
+html.dark-theme #theme-toggle .sun { display: block; }
+html.dark-theme #theme-toggle .moon { display: none; }
+
 
 #chat-container {
     flex-grow: 1;
@@ -69,6 +127,7 @@ header p {
     line-height: 1.5;
     white-space: pre-wrap;
     word-wrap: break-word;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .user-message {
@@ -95,6 +154,7 @@ footer {
     padding: 0.5rem 1rem;
     border-top: 1px solid var(--border-color);
     background-color: var(--footer-bg);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 #chat-form {
@@ -113,13 +173,15 @@ footer {
     resize: none;
     max-height: 150px;
     overflow-y: auto;
-    background-color: #fff;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
 #prompt-input:focus {
     outline: none;
     border-color: var(--user-message-bg);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--user-message-bg) 25%, transparent);
 }
 
 #file-input {
@@ -136,12 +198,12 @@ footer {
     border-radius: 50%;
     cursor: pointer;
     background-color: transparent;
-    color: var(--text-secondary);
+    color: var(--icon-color);
     transition: background-color 0.2s, color 0.2s;
 }
 
-.file-input-label:hover, #submit-button:hover {
-    background-color: #d8dfe6;
+.file-input-label:hover {
+    background-color: var(--hover-bg);
 }
 
 #submit-button {
@@ -150,7 +212,7 @@ footer {
 }
 
 #submit-button:hover {
-    background-color: #0056b3;
+    background-color: color-mix(in srgb, var(--user-message-bg) 85%, black);
 }
 
 #image-preview-container {
@@ -199,7 +261,7 @@ footer {
 .loading-dots div {
     width: 8px;
     height: 8px;
-    background-color: #888;
+    background-color: var(--text-secondary);
     border-radius: 50%;
     animation: bounce 1.4s infinite ease-in-out both;
 }
@@ -219,7 +281,13 @@ footer {
 /* KaTeX specific styles */
 .model-message .katex {
     font-size: 1.1em; /* Make math slightly larger */
+    color: var(--model-message-text); /* Ensure katex text color matches */
 }
+
+html.dark-theme .katex {
+    color: var(--text-primary);
+}
+
 
 .katex-display {
     margin: 0.5em 0; /* Add vertical space around block equations */
